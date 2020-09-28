@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
-import { Text, StyleSheet, View, FlatList } from 'react-native'
+import { Text, StyleSheet, View, FlatList, TouchableHighlight } from 'react-native'
 import Cita from './components/Cita'
 import Formulario from './components/Formulario'
 
 const App = () => {
+
+  const [statusForm, setStatusForm] = useState(false)
 
   const [citas, setCitas] = useState([
     {id:'1', paciente:'Carlos', propietario:'Charles', sintomas:'bosteza'},
@@ -17,21 +19,35 @@ const App = () => {
     })
   }
 
+  const addCita = cita => {
+    setCitas([
+      ...citas,
+      cita
+    ])
+  }
+
   return (
-    <View style={styles.background}>
-      <Text style={styles.title}>App Citas</Text>
+      <View style={styles.background}>
+        <Text style={styles.title}>App Citas</Text>
+        
+        <TouchableHighlight style={styles.btnSubmit} onPress={()=>setStatusForm(!statusForm) }>
+            <Text style={styles.textSubmit}>Nueva Cita</Text>
+        </TouchableHighlight>
 
-      <Formulario />
+        {statusForm ? (
+          <Formulario addCita={addCita} setStatusForm={setStatusForm}/>
+        ) : (
+          <>
+            <Text style={styles.title}>{citas.length>0 ? 'Administrador Citas' : 'No hay citas'}</Text>
 
-      <Text style={styles.title}>{citas.length>0 ? 'Administrador Citas' : 'No hay citas'}</Text>
-
-      <FlatList
-        data={citas}
-        renderItem={ cita=> <Cita cita={cita} deleteCita={deleteCita}/> }
-        keyExtractor={cita=>cita.id}
-      />
-
-    </View>
+            <FlatList
+              data={citas}
+              renderItem={ cita=> <Cita cita={cita} deleteCita={deleteCita}/> }
+              keyExtractor={cita=>cita.id}
+            />
+          </>
+        )}
+      </View>
   )
 }
 
@@ -46,6 +62,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
     fontWeight: 'bold'
+  },
+  btnSubmit: {
+    backgroundColor: '#7d024e',
+    padding: 10,
+    marginVertical: 10
+  },
+  textSubmit: {
+      color: 'white',
+      textAlign: 'center',
+      fontWeight: 'bold'
   }
 })
 
